@@ -1,1 +1,52 @@
+# environnement virtuel
 .nyc_venv
+
+# dossier comprenant les fichiers de trajets des taxis jaunes en format parquet
+/dataset
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment variables
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data files
+data/raw/*
+data/processed/*
+data/reference/*
+
+# Exception : conserver les dossiers
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/reference/.gitkeep
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
+# Luigi
+luigi.cfg
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Secrets
+*.pem
+*.key
