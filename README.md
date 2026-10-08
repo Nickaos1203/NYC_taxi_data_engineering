@@ -20,11 +20,24 @@ L'architecture cible repose sur 3 schémas Snowflake :
 - STAGING : Données nettoyées, filtrées et enrichies (durée, vitesse, catégorisation)
 - FINAL : Tables d'analyse métier (résumés quotidiens, analyses par zone, patterns horaires)
 
-Technologies utilisées : Snowflake, SQL, dbt Core, Python, GitHub Actions, Parquet.
+Technologies utilisées : Snowflake, SQL, dbt Core, Python, GitHub Actions, Luigi, Power Bi.
+
+
+## Data Quality
+
+Le projet intègre des contrôles portant notamment sur :
+
+- les valeurs manquantes ;
+- les valeurs négatives ;
+- les distances nulles ;
+- les valeurs extrêmes ;
+- les doublons ;
+- la cohérence temporelle ;
+- l'intégrité référentielle.
 
 
 ## Architecture
-
+```
 nyc-taxi-data-engineering
 │   .env.example
 │   .gitignore
@@ -40,28 +53,28 @@ nyc-taxi-data-engineering
 │           .gitkeep
 │
 ├── ingestion
-│       __init__.py
-│       download_tlc.py
-│       validate_parquet.py
+│   |__ __init__.py
+│   |__ download_tlc.py
+│   |__ validate_parquet.py
 │
 ├── luigi
-│       __init__.py
-│       pipeline.py
+│   |__ __init__.py
+│   |__ pipeline.py
 │
 ├── quality
-│       __init__.py
-│       data_quality.py
+│   |__ __init__.py
+│   |__ data_quality.py
 │
 ├── sql
 │
 ├── tests
-│       __init__.py
-│       test_ingestion.py
+│   |__ __init__.py
+│   |__ test_ingestion.py
 │
 ├── dbt
 │
 └── powerbi
-
+```
 
 ## Etapes
 
@@ -82,14 +95,3 @@ Snowflake FINAL
 Power BI
 
 
-## Data Quality
-
-Le projet intègre des contrôles portant notamment sur :
-
-- les valeurs manquantes ;
-- les valeurs négatives ;
-- les distances nulles ;
-- les valeurs extrêmes ;
-- les doublons ;
-- la cohérence temporelle ;
-- l'intégrité référentielle.
