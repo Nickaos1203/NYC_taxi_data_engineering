@@ -1,0 +1,32 @@
+
+version: 2
+
+models:
+  - name: stg_yellow_trips
+    description: >
+      Modèle de staging des trajets Yellow Taxi.
+      Calcul des durées, vitesses et indicateurs de qualité.
+
+    columns:
+      - name: quality_status
+        description: Statut global de qualité du trajet.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - VALID
+                  - WARN
+                  - INVALID
+
+      - name: is_invalid
+        data_tests:
+          - not_null
+
+      - name: has_warning
+        data_tests:
+          - not_null
+
+      - name: is_negative_transaction
+        data_tests:
+          - not_null

@@ -2,9 +2,10 @@ Welcome to your new dbt project!
 
 ### Using the starter project
 
-Try running the following commands:
+On the path ```dbt/nyc_taxi_dbt```, try running the following commands:
 - dbt run
 - dbt test
+- dbt debug
 
 
 ### Resources:

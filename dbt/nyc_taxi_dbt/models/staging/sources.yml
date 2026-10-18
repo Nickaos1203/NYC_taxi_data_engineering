@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: nyc_taxi_raw
+    database: NYC_TAXI
+    schema: RAW
+
+    tables:
+      - name: YELLOW_TRIPS
