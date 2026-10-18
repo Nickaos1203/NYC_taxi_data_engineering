@@ -35,6 +35,17 @@ Le projet intègre des contrôles portant notamment sur :
 - la cohérence temporelle ;
 - l'intégrité référentielle.
 
+| Règle | Traitement |
+|---|---|
+| Distance négative ou supérieure à 1 000 miles | `INVALID` |
+| Dépose avant la prise en charge | `INVALID` |
+| Durée supérieure à 24 heures | `INVALID` |
+| Nombre de passagers hors plage définie | `INVALID` |
+| Distance égale à zéro | `WARN` |
+| Vitesse supérieure à 100 mph | `WARN` |
+| Montant total négatif | `WARN`, exception métier conservée |
+| Valeurs manquantes ciblées | `WARN` |
+
 
 ## Architecture
 ```
