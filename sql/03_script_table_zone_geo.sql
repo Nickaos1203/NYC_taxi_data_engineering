@@ -1,0 +1,45 @@
+CREATE FILE FORMAT IF NOT EXISTS NYC_TAXI.RAW.TAXI_ZONE_CSV_FORMAT
+    TYPE = CSV
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+    NULL_IF = ('', 'NULL');
+
+
+CREATE STAGE IF NOT EXISTS NYC_TAXI.RAW.TAXI_ZONE_STAGE
+    FILE_FORMAT = NYC_TAXI.RAW.TAXI_ZONE_CSV_FORMAT;
+
+
+-------------------------------------------------------------
+-----------AJOUT DU FICHIER CSV MANUELLEMENT-----------------
+-------------------------------------------------------------
+
+-- Création de la table en RAW
+CREATE TABLE IF NOT EXISTS NYC_TAXI.RAW.TAXI_ZONE_LOOKUP (
+    LOCATIONID NUMBER(38,0),
+    BOROUGH VARCHAR(100),
+    ZONE VARCHAR(255),
+    SERVICE_ZONE VARCHAR(100)
+);
+
+
+-- import du fichier csv dans la table RAW
+COPY INTO NYC_TAXI.RAW.TAXI_ZONE_LOOKUP
+FROM @NYC_TAXI.RAW.TAXI_ZONE_STAGE
+FILES = ('taxi_zone_lookup.csv')
+FILE_FORMAT = (
+    FORMAT_NAME = NYC_TAXI.RAW.TAXI_ZONE_CSV_FORMAT
+)
+ON_ERROR = 'ABORT_STATEMENT';
+
+
+-- Vérification du chargement des données
+SELECT
+    COUNT(*) AS nb_zones,
+    COUNT(DISTINCT LOCATIONID) AS nb_ids_distinct,
+    COUNT_IF(LOCATIONID IS NULL) AS ids_nuls
+FROM NYC_TAXI.RAW.TAXI_ZONE_LOOKUP;
+
+SELECT *
+FROM NYC_TAXI.RAW.TAXI_ZONE_LOOKUP
+ORDER BY LOCATIONID
+LIMIT 10;

@@ -1,0 +1,18 @@
+
+version: 2
+
+models:
+  - name: dim_zone
+    description: Référentiel géographique des zones de taxi TLC.
+
+    columns:
+      - name: location_id
+        description: Identifiant TLC de la zone.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: zone_name
+        description: Nom de la zone de taxi.
+        data_tests:
+          - not_null

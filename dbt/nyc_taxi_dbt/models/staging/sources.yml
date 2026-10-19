@@ -7,3 +7,4 @@ sources:
 
     tables:
       - name: YELLOW_TRIPS
+      - name: TAXI_ZONE_LOOKUP

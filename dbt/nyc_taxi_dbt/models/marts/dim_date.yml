@@ -1,0 +1,21 @@
+
+version: 2
+
+models:
+  - name: dim_date
+    description: Dimension calendrier pour l'analyse des trajets.
+
+    columns:
+      - name: date_key
+        description: Date de référence.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: year
+        data_tests:
+          - not_null
+
+      - name: month_number
+        data_tests:
+          - not_null
