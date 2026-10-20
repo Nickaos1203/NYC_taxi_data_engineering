@@ -206,12 +206,212 @@ Les tableaux de bord couvrent notamment :
 - Les tendances temporelles par jour et par heure.
 - Les indicateurs de qualité des données.
 
-## 10. Perspectives d'amélioration
+## 10. Dictionnaire de données — NYC Taxi
 
-Les évolutions envisagées portent sur :
+> Les types de données et les noms de colonnes sont issus de l'export Snowflake du 21 octobre 2026.
+> Les colonnes sont indiquées comme nullable dans cet export. Les descriptions sont fonctionnelles et proposées à partir du nom des colonnes et de leur usage dans le projet.
 
-- L'automatisation du chargement des fichiers Parquet dans Snowflake.
-- L'amélioration de la gestion des marqueurs Luigi pour détecter les changements de données.
-- L'intégration des tests dbt dans un workflow CI/CD.
-- L'ajout de nouveaux contrôles de qualité et d'indicateurs de suivi.
-- L'amélioration des tableaux de bord Power BI.
+### 1. Schéma RAW
+
+#### RAW.YELLOW_TRIPS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `VENDORID` | NUMBER | Identifiant du fournisseur de technologie taxi. |
+| `TPEP_PICKUP_DATETIME` | TIMESTAMP_NTZ | Date et heure de prise en charge du passager. |
+| `TPEP_DROPOFF_DATETIME` | TIMESTAMP_NTZ | Date et heure de dépôt du passager. |
+| `PASSENGER_COUNT` | NUMBER | Nombre de passagers déclarés. |
+| `TRIP_DISTANCE` | FLOAT | Distance du trajet en miles. |
+| `RATECODEID` | NUMBER | Code du tarif appliqué au trajet. |
+| `STORE_AND_FWD_FLAG` | TEXT | Indique si les données du trajet ont été stockées puis transmises. |
+| `PULOCATIONID` | NUMBER | Identifiant de la zone de prise en charge. |
+| `DOLOCATIONID` | NUMBER | Identifiant de la zone de dépôt. |
+| `PAYMENT_TYPE` | NUMBER | Code du moyen de paiement utilisé. |
+| `FARE_AMOUNT` | FLOAT | Montant du tarif de base. |
+| `EXTRA` | FLOAT | Montant des suppléments. |
+| `MTA_TAX` | FLOAT | Montant de la taxe MTA. |
+| `TIP_AMOUNT` | FLOAT | Montant du pourboire. |
+| `TOLLS_AMOUNT` | FLOAT | Montant des péages. |
+| `IMPROVEMENT_SURCHARGE` | FLOAT | Montant du supplément d'amélioration. |
+| `TOTAL_AMOUNT` | FLOAT | Montant total facturé pour le trajet. |
+| `CONGESTION_SURCHARGE` | FLOAT | Montant du supplément lié à la congestion. |
+| `AIRPORT_FEE` | FLOAT | Frais liés aux trajets concernés par les aéroports. |
+
+#### RAW.TAXI_ZONE_LOOKUP
+
+| Colonne | Type | Description |
+|---|---|---|
+| `LOCATIONID` | NUMBER | Identifiant unique de la zone taxi. |
+| `BOROUGH` | TEXT | Borough ou arrondissement de New York associé à la zone. |
+| `ZONE` | TEXT | Nom de la zone taxi. |
+| `SERVICE_ZONE` | TEXT | Catégorie de zone de service. |
+
+### 2. Schéma STAGING
+
+#### STAGING.STG_YELLOW_TRIPS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `VENDORID` | NUMBER | Identifiant du fournisseur de technologie taxi. |
+| `TPEP_PICKUP_DATETIME` | TIMESTAMP_NTZ | Date et heure de prise en charge. |
+| `TPEP_DROPOFF_DATETIME` | TIMESTAMP_NTZ | Date et heure de dépôt. |
+| `PASSENGER_COUNT` | NUMBER | Nombre de passagers déclarés. |
+| `TRIP_DISTANCE` | FLOAT | Distance du trajet en miles. |
+| `RATECODEID` | NUMBER | Code du tarif appliqué. |
+| `STORE_AND_FWD_FLAG` | TEXT | Indicateur de stockage puis transmission des données. |
+| `PULOCATIONID` | NUMBER | Identifiant de la zone de prise en charge. |
+| `DOLOCATIONID` | NUMBER | Identifiant de la zone de dépôt. |
+| `PAYMENT_TYPE` | NUMBER | Code du moyen de paiement. |
+| `FARE_AMOUNT` | FLOAT | Montant du tarif de base. |
+| `EXTRA` | FLOAT | Montant des suppléments. |
+| `MTA_TAX` | FLOAT | Montant de la taxe MTA. |
+| `TIP_AMOUNT` | FLOAT | Montant du pourboire. |
+| `TOLLS_AMOUNT` | FLOAT | Montant des péages. |
+| `IMPROVEMENT_SURCHARGE` | FLOAT | Montant du supplément d'amélioration. |
+| `TOTAL_AMOUNT` | FLOAT | Montant total facturé. |
+| `CONGESTION_SURCHARGE` | FLOAT | Montant du supplément de congestion. |
+| `AIRPORT_FEE` | FLOAT | Frais liés aux aéroports. |
+| `TRIP_DURATION_SECONDS` | NUMBER | Durée du trajet calculée en secondes. |
+| `TRIP_SPEED_MPH` | FLOAT | Vitesse moyenne calculée en miles par heure. |
+| `IS_INVALID` | BOOLEAN | Indique si le trajet est considéré comme invalide. |
+| `HAS_WARNING` | BOOLEAN | Indique si le trajet présente une anomalie non bloquante. |
+| `IS_NEGATIVE_TRANSACTION` | BOOLEAN | Indique si le trajet comporte un montant de transaction négatif. |
+| `PRIMARY_QUALITY_ISSUE` | TEXT | Principale anomalie identifiée pour le trajet. |
+| `QUALITY_STATUS` | TEXT | Statut global de qualité du trajet. |
+| `DISTANCE_QUALITY_STATUS` | TEXT | Statut de qualité associé à la distance du trajet. |
+
+### 3. Schéma QUARANTINE
+
+#### QUARANTINE.INVALID_YELLOW_TRIPS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `VENDORID` | NUMBER | Identifiant du fournisseur de technologie taxi. |
+| `TPEP_PICKUP_DATETIME` | TIMESTAMP_NTZ | Date et heure de prise en charge. |
+| `TPEP_DROPOFF_DATETIME` | TIMESTAMP_NTZ | Date et heure de dépôt. |
+| `PASSENGER_COUNT` | NUMBER | Nombre de passagers déclarés. |
+| `TRIP_DISTANCE` | FLOAT | Distance du trajet en miles. |
+| `RATECODEID` | NUMBER | Code du tarif appliqué. |
+| `STORE_AND_FWD_FLAG` | TEXT | Indicateur de stockage puis transmission des données. |
+| `PULOCATIONID` | NUMBER | Identifiant de la zone de prise en charge. |
+| `DOLOCATIONID` | NUMBER | Identifiant de la zone de dépôt. |
+| `PAYMENT_TYPE` | NUMBER | Code du moyen de paiement. |
+| `FARE_AMOUNT` | FLOAT | Montant du tarif de base. |
+| `EXTRA` | FLOAT | Montant des suppléments. |
+| `MTA_TAX` | FLOAT | Montant de la taxe MTA. |
+| `TIP_AMOUNT` | FLOAT | Montant du pourboire. |
+| `TOLLS_AMOUNT` | FLOAT | Montant des péages. |
+| `IMPROVEMENT_SURCHARGE` | FLOAT | Montant du supplément d'amélioration. |
+| `TOTAL_AMOUNT` | FLOAT | Montant total facturé. |
+| `CONGESTION_SURCHARGE` | FLOAT | Montant du supplément de congestion. |
+| `AIRPORT_FEE` | FLOAT | Frais liés aux aéroports. |
+| `TRIP_DURATION_SECONDS` | NUMBER | Durée du trajet calculée en secondes. |
+| `TRIP_SPEED_MPH` | FLOAT | Vitesse moyenne calculée en miles par heure. |
+| `IS_INVALID` | BOOLEAN | Indique si le trajet est invalide. |
+| `HAS_WARNING` | BOOLEAN | Indique si le trajet présente un avertissement. |
+| `IS_NEGATIVE_TRANSACTION` | BOOLEAN | Indique si le trajet comporte une transaction négative. |
+| `PRIMARY_QUALITY_ISSUE` | TEXT | Principale anomalie identifiée. |
+| `QUALITY_STATUS` | TEXT | Statut global de qualité. |
+| `DISTANCE_QUALITY_STATUS` | TEXT | Statut de qualité associé à la distance. |
+
+### 4. Schéma FINAL
+
+#### FINAL.FCT_TRIPS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `VENDORID` | NUMBER | Identifiant du fournisseur de technologie taxi. |
+| `TPEP_PICKUP_DATETIME` | TIMESTAMP_NTZ | Date et heure de prise en charge. |
+| `TPEP_DROPOFF_DATETIME` | TIMESTAMP_NTZ | Date et heure de dépôt. |
+| `PASSENGER_COUNT` | NUMBER | Nombre de passagers déclarés. |
+| `TRIP_DISTANCE` | FLOAT | Distance du trajet en miles. |
+| `RATECODEID` | NUMBER | Code du tarif appliqué. |
+| `STORE_AND_FWD_FLAG` | TEXT | Indicateur de stockage puis transmission des données. |
+| `PULOCATIONID` | NUMBER | Identifiant de la zone de prise en charge d'origine. |
+| `DOLOCATIONID` | NUMBER | Identifiant de la zone de dépôt. |
+| `PAYMENT_TYPE` | NUMBER | Code du moyen de paiement. |
+| `FARE_AMOUNT` | FLOAT | Montant du tarif de base. |
+| `EXTRA` | FLOAT | Montant des suppléments. |
+| `MTA_TAX` | FLOAT | Montant de la taxe MTA. |
+| `TIP_AMOUNT` | FLOAT | Montant du pourboire. |
+| `TOLLS_AMOUNT` | FLOAT | Montant des péages. |
+| `IMPROVEMENT_SURCHARGE` | FLOAT | Montant du supplément d'amélioration. |
+| `TOTAL_AMOUNT` | FLOAT | Montant total facturé. |
+| `CONGESTION_SURCHARGE` | FLOAT | Montant du supplément de congestion. |
+| `AIRPORT_FEE` | FLOAT | Frais liés aux aéroports. |
+| `TRIP_DURATION_SECONDS` | NUMBER | Durée du trajet en secondes. |
+| `TRIP_SPEED_MPH` | FLOAT | Vitesse moyenne en miles par heure. |
+| `QUALITY_STATUS` | TEXT | Statut global de qualité du trajet. |
+| `HAS_WARNING` | BOOLEAN | Indique si le trajet présente un avertissement. |
+| `IS_NEGATIVE_TRANSACTION` | BOOLEAN | Indique si le trajet comporte une transaction négative. |
+| `DISTANCE_QUALITY_STATUS` | TEXT | Statut de qualité de la distance. |
+| `PICKUP_DATE` | DATE | Date de prise en charge, utilisée pour les analyses temporelles. |
+| `PICKUP_LOCATION_ID` | NUMBER | Identifiant de la zone de prise en charge, utilisé pour les relations analytiques. |
+
+#### FINAL.DIM_DATE
+
+| Colonne | Type | Description |
+|---|---|---|
+| `DATE_KEY` | DATE | Date de référence de la dimension. |
+| `YEAR` | NUMBER | Année de la date. |
+| `QUARTER` | NUMBER | Trimestre de l'année. |
+| `MONTH_NUMBER` | NUMBER | Numéro du mois. |
+| `MONTH_NAME` | TEXT | Nom du mois. |
+| `DAY_NUMBER` | NUMBER | Numéro du jour dans le mois. |
+| `DAY_OF_WEEK_NUMBER` | NUMBER | Numéro du jour dans la semaine. |
+| `DAY_NAME` | TEXT | Nom du jour de la semaine. |
+| `IS_WEEKEND` | BOOLEAN | Indique si la date correspond à un samedi ou dimanche. |
+
+#### FINAL.DIM_ZONE
+
+| Colonne | Type | Description |
+|---|---|---|
+| `LOCATION_ID` | NUMBER | Identifiant unique de la zone taxi. |
+| `BOROUGH` | TEXT | Borough ou arrondissement associé à la zone. |
+| `ZONE_NAME` | TEXT | Nom de la zone taxi. |
+| `SERVICE_ZONE` | TEXT | Catégorie de zone de service. |
+
+#### FINAL.MART_DAILY_TRIPS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `PICKUP_DATE` | DATE | Date de prise en charge des trajets agrégés. |
+| `TRIP_COUNT` | NUMBER | Nombre de trajets pour la date. |
+| `TOTAL_REVENUE` | FLOAT | Somme des revenus totaux des trajets. |
+| `TOTAL_FARE` | FLOAT | Somme des tarifs de base. |
+| `TOTAL_TIPS` | FLOAT | Somme des pourboires. |
+| `AVG_TOTAL_AMOUNT` | FLOAT | Montant total moyen par trajet. |
+| `AVG_TRIP_DISTANCE` | FLOAT | Distance moyenne des trajets. |
+| `AVG_TRIP_DURATION_MINUTES` | NUMBER | Durée moyenne des trajets en minutes. |
+| `WARNING_TRIP_COUNT` | NUMBER | Nombre de trajets avec avertissement. |
+| `NEGATIVE_TRANSACTION_COUNT` | NUMBER | Nombre de trajets avec transaction négative. |
+
+#### FINAL.MART_PICKUP_ZONE
+
+| Colonne | Type | Description |
+|---|---|---|
+| `PICKUP_LOCATION_ID` | NUMBER | Identifiant de la zone de prise en charge. |
+| `PICKUP_ZONE` | TEXT | Nom de la zone de prise en charge. |
+| `PICKUP_BOROUGH` | TEXT | Borough associé à la zone de prise en charge. |
+| `PICKUP_SERVICE_ZONE` | TEXT | Catégorie de zone de service. |
+| `TRIP_COUNT` | NUMBER | Nombre de trajets au départ de la zone. |
+| `TOTAL_REVENUE` | FLOAT | Somme des revenus générés par les trajets. |
+| `AVG_TOTAL_AMOUNT` | FLOAT | Montant total moyen par trajet. |
+| `AVG_TRIP_DISTANCE` | FLOAT | Distance moyenne des trajets. |
+| `AVG_TRIP_DURATION_MINUTES` | NUMBER | Durée moyenne des trajets en minutes. |
+| `WARNING_TRIP_COUNT` | NUMBER | Nombre de trajets avec avertissement. |
+| `NEGATIVE_TRANSACTION_COUNT` | NUMBER | Nombre de trajets avec transaction négative. |
+
+#### FINAL.MART_TEMPORAL_PATTERNS
+
+| Colonne | Type | Description |
+|---|---|---|
+| `PICKUP_DATE` | DATE | Date de prise en charge. |
+| `PICKUP_HOUR` | NUMBER | Heure de prise en charge, de 0 à 23. |
+| `PICKUP_DAY_OF_WEEK_NUMBER` | NUMBER | Numéro du jour de la semaine. |
+| `PICKUP_DAY_NAME` | TEXT | Nom du jour de la semaine. |
+| `TRIP_COUNT` | NUMBER | Nombre de trajets pour la date et l'heure. |
+| `TOTAL_REVENUE` | FLOAT | Somme des revenus générés. |
+| `AVG_TRIP_DURATION_MINUTES` | NUMBER | Durée moyenne des trajets en minutes. |
+| `WARNING_TRIP_COUNT` | NUMBER | Nombre de trajets avec avertissement. |
+| `NEGATIVE_TRANSACTION_COUNT` | NUMBER | Nombre de trajets avec transaction négative. |
