@@ -208,10 +208,14 @@ Les tableaux de bord couvrent notamment :
 
 ## 10. Dictionnaire de données — NYC Taxi
 
-> Les types de données et les noms de colonnes sont issus de l'export Snowflake du 21 octobre 2026.
-> Les colonnes sont indiquées comme nullable dans cet export. Les descriptions sont fonctionnelles et proposées à partir du nom des colonnes et de leur usage dans le projet.
 
 ### 1. Schéma RAW
+
+| Table | Description | Source |
+|---|---|---|
+| `RAW.YELLOW_TRIPS` | Données brutes des trajets Yellow Taxi de janvier 2024. | Fichier Parquet NYC TLC |
+| `RAW.TAXI_ZONE_LOOKUP` | Référentiel des zones de prise en charge et de dépôt des taxis. | Référentiel NYC TLC |
+
 
 #### RAW.YELLOW_TRIPS
 
@@ -248,6 +252,10 @@ Les tableaux de bord couvrent notamment :
 
 ### 2. Schéma STAGING
 
+| Table | Description | Principales colonnes |
+|---|---|---|
+| `STAGING.STG_YELLOW_TRIPS` | Données préparées et enrichies avec des indicateurs de durée, vitesse et qualité. | `TRIP_DURATION_SECONDS`, `TRIP_SPEED_MPH`, `IS_INVALID`, `HAS_WARNING`, `IS_NEGATIVE_TRANSACTION`, `PRIMARY_QUALITY_ISSUE`, `QUALITY_STATUS`, `DISTANCE_QUALITY_STATUS` |
+
 #### STAGING.STG_YELLOW_TRIPS
 
 | Colonne | Type | Description |
@@ -282,6 +290,10 @@ Les tableaux de bord couvrent notamment :
 
 ### 3. Schéma QUARANTINE
 
+| Table | Description |
+|---|---|
+| `QUARANTINE.INVALID_YELLOW_TRIPS` | Stocke les trajets identifiés comme invalides lors des contrôles de qualité. |
+
 #### QUARANTINE.INVALID_YELLOW_TRIPS
 
 | Colonne | Type | Description |
@@ -315,6 +327,15 @@ Les tableaux de bord couvrent notamment :
 | `DISTANCE_QUALITY_STATUS` | TEXT | Statut de qualité associé à la distance. |
 
 ### 4. Schéma FINAL
+
+| Table | Type | Description |
+|---|---|---|
+| `FINAL.DIM_DATE` | Dimension | Référentiel des dates utilisé pour les analyses temporelles. |
+| `FINAL.DIM_ZONE` | Dimension | Référentiel géographique des zones de taxis. |
+| `FINAL.FCT_TRIPS` | Table de faits | Trajets validés après exclusion des trajets invalides. Les trajets avec avertissements sont conservés. |
+| `FINAL.MART_DAILY_TRIPS` | Data mart | Agrégation quotidienne du nombre de trajets et des revenus. |
+| `FINAL.MART_PICKUP_ZONE` | Data mart | Agrégation des trajets et revenus par zone de prise en charge. |
+| `FINAL.MART_TEMPORAL_PATTERNS` | Data mart | Agrégation des trajets par date et heure pour analyser les tendances temporelles. |
 
 #### FINAL.FCT_TRIPS
 
